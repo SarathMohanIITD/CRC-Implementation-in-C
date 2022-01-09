@@ -10,6 +10,7 @@ And finally measure the timing for each method
  
 Cyclic Redundancy Check (CRC) is a block code invented by W. Wesley Peterson in 1961. It is commonly used to detect accidental changes to data transmitted via telecommunications networks and storage devices.
 CRC involves binary division of the data bits being sent by a predetermined divisor agreed upon by the communicating system. The divisor is generated using polynomials. So, CRC is also called polynomial code checksum.
+
 ![image](https://user-images.githubusercontent.com/86975877/148676751-253ab72b-7781-4402-90a5-ccb9d4687fae.png)
 
 #### Encoding using CRC
@@ -43,6 +44,54 @@ CRC involves binary division of the data bits being sent by a predetermined divi
 3. IMPROVED BYTE BY BYTE IMPLEMENTATION
           Consider a message that begins with some number of zero bits. The remainder will never contain anything other than zero until the first one in the message is shifted into it. That's a dangerous situation, since packets beginning with one or more zeros may be completely legitimate and a dropped or added zero would not be noticed by the CRC. (In some applications, even a packet of all zeros may be legitimate!) The simple way to eliminate this weakness is to start with a nonzero remainder. The parameter called initial remainder tells you what value to use for a particular CRC standard. And only one small change is required to the crcSlow() and crcFast() functions:
 ```
-crc remainder = INITIAL_REMAINDER 
+crc remainder = INITIAL_REMAINDER
+``` 
+The final XOR value exists for a similar reason. To implement this capability, simply change the value that's returned by crcSlow() and crcFast() as follows:
 ```
-          The final XOR value exists for a similar reason. To implement this capability, simply change the value that's returned by crcSlow() and crcFast() as follows:
+return (remainder ^ FINAL_XOR_VALUE)
+```
+## ALGORITHM
+##### 2 sets of code have been written.
+##### CODE 1:
+Purpose: To check the individual frame performance
+The data has been taken as an array of integers.
+- User will be asked to enter an 8-bit integer which will represent the noise which is going to be added
+- The entered integer will be XORed with a data element
+- If the input integer is ‘00’ then it can be considered as a noise free channel
+OUTPUT
+- Time taken for CRC appending for all 3 methods will be measured and displayed
+- The CRC which has been appended to the data will be shown for all 3 cases
+- Finally, the Received data will be decoded and will be checked for error and message will be displayed for successful transmission
+##### CODE 2:
+Code 2 can be considered as an extension of code 1
+- Rather than sending a single data by appending a frame, here we are sending data in frames
+- In each frame we are appending CRC bits
+- Random noise will be introduced in each frame transfer
+- Finally, the received data will be checked for error using the appended CRC
+OUTPUT
+- Overall time taken for entire data transfer for all 3 methods
+- Total number of frames in which error has been detected
+This code has been cross compiled and has been run on the emulated ARM processer and the emulated x86 and the results has been noted
+
+## OUTPUTS
+#### OUTPUTS OF CODE 1 
+
+- Error detected when noise is introduced
+- 
+  ![image](https://user-images.githubusercontent.com/86975877/148677389-33875fb5-f35f-4871-b762-e5d18a48a928.png)
+
+- Error not detected if no noise is introduced
+- 
+  ![image](https://user-images.githubusercontent.com/86975877/148677403-b5c965a3-04d3-4222-96cf-b6bfd9d04bad.png)
+#### OUTPUT OF CODE 2
+
+![image](https://user-images.githubusercontent.com/86975877/148677436-bd9c96be-8422-4c11-beda-d1a0274e20bf.png)
+
+## CONCLUSION
+CRC implementation has been done successfully using 3 methods and following observations were made
+- Data was sent in frames
+- In each frame CRC has been calculated and remainder has been appended with data itself
+- Random noise has been generated and was added to each frame
+- Data was decoded at the receiver side and error detection has been done
+- Time for CRC calculation for all methods were calculated
+We also observed that the byte-by-byte implementation is significantly faster than the bit-by-bit implementation
